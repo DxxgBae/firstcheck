@@ -5,16 +5,18 @@
 #Map .tool {
     z-index: 1;
     position: absolute;
-    left: 50%;
+    left: calc(50% - 7.5rem);
     bottom: 1rem;
-    width: 0;
+    width: 15rem;
+    height: 3rem;
+    border-radius: .5rem;
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    background-color: white;
+    background-color: whitesmoke;
+    filter: drop-shadow(0 0 .5rem rgba(0, 0, 0, .1));
 }
 
-#Map .tool i {
+#Map .tool .item {
     cursor: pointer;
     margin: .5rem;
     width: 2rem;
@@ -23,6 +25,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    transition: var(--ms);
+}
+
+#Map .tool .item:hover {
     background-color: white;
+}
+
+#Map #search {
+    position: absolute;
+    left: 3rem;
+    padding: .5rem;
+    width: 11.5rem;
+    height: 2rem;
+    border-radius: .5rem;
+    outline: none;
+    border: none;
+    transition: var(--ms);
+}
+
+#Map #search:not(:focus) {
+    padding: 0;
+    width: 0;
 }

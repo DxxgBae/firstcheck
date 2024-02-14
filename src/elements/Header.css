@@ -57,11 +57,25 @@
 #Header .item .title {
     pointer-events: none;
     position: absolute;
+    padding: .5rem;
     left: calc(100% + .5rem);
+    border-radius: .5rem;
+    background-color: var(--color-black);
+    color: white;
     transition: var(--ms);
     opacity: 0;
 }
 
 #Header .item:hover .title {
     opacity: 1;
+}
+
+#Header .title i {
+    position: absolute;
+    top: 0;
+    left: -.5rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    transform: rotate(180deg);
 }

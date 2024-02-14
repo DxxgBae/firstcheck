@@ -21,13 +21,22 @@ function Map() {
         <section ref={mapRef} id='Map'>
             <div className='noise' />
             <div className='tool'>
-                <i className='fa-solid fa-search' />
-                <i className='fa-solid fa-home' />
-                <i className='fa-solid fa-home' />
-                <i className='fa-solid fa-home' />
-                <i className='fa-solid fa-home' />
-                <i className='fa-solid fa-home' />
-                <i className='fa-solid fa-home' />
+                <label className='item'>
+                    <input type='text' id='search' placeholder='SEARCH' />
+                    <i className='fa-solid fa-search' />
+                </label>
+                <div className='item'>
+                    <i className='fa-solid fa-ruler' />
+                </div>
+                <div className='item'>
+                    <i className='fa-solid fa-globe' />
+                </div>
+                <div className='item'>
+                    <i className='fa-solid fa-earth-asia' />
+                </div>
+                <div className='item'>
+                    <i className='fa-solid fa-table-cells' />
+                </div>
             </div>
         </section>
     );
