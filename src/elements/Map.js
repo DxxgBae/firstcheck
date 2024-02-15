@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import fetchJsonp from 'fetch-jsonp';
 import './Map.css';
 
 function Map() {
@@ -13,8 +14,21 @@ function Map() {
             zoom: 15
         });
 
-        console.log(map);
+        const selectSite = (lat, lng) => {
+            fetchJsonp(`https://api.vworld.kr/req/data?request=GetFeature&key=A8901E28-B93C-3A14-B1C1-2FBC40EB22CA&data=LP_PA_CBND_BUBUN&crs=EPSG:4326&geomFilter=POINT(${lng} ${lat})`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('JSONP response:', data);
+                    map.data.addGeoJson(data.response.result.featureCollection);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        };
 
+        naver.maps.Event.addListener(map, 'click', (e) => {
+            selectSite(e.coord._lat, e.coord._lng);
+        });
     }, [naver]);
 
     return (
