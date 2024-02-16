@@ -14,20 +14,20 @@ function Map() {
             zoom: 15
         });
 
-        const selectSite = (lat, lng) => {
+        const selectSite = (lat, lng, center = null, zoom = null) => {
             fetchJsonp(`https://api.vworld.kr/req/data?request=GetFeature&key=A8901E28-B93C-3A14-B1C1-2FBC40EB22CA&data=LP_PA_CBND_BUBUN&crs=EPSG:4326&geomFilter=POINT(${lng} ${lat})`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('JSONP response:', data);
                     map.data.addGeoJson(data.response.result.featureCollection);
+                    naver.maps.Event.addListener(map.data.getAllFeature().at(-1), 'click', (e) => map.data.removeFeature(e.feature));
+                    if (center) map.setCenter(center);
+                    if (zoom) map.setZoom(zoom);
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+                .catch(error => console.error('Error:', error));
         };
 
         naver.maps.Event.addListener(map, 'click', (e) => {
-            selectSite(e.coord._lat, e.coord._lng);
+            selectSite(e.coord._lat, e.coord._lng, map.getCenter(), map.getZoom());
         });
     }, [naver]);
 
