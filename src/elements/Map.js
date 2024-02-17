@@ -1,10 +1,15 @@
 import { useEffect, useRef } from 'react';
 import fetchJsonp from 'fetch-jsonp';
+import { stateFeatures } from './store';
 import './Map.css';
 
 function Map() {
-    const mapRef = useRef(null);
+    const mapRef = useRef();
+    const toolRef = useRef();
+    const keyVworld = 'A8901E28-B93C-3A14-B1C1-2FBC40EB22CA';
+    //const keyData = 'GXGoD02oAtHgVlYoMYAk%2FF4R7Z68cpmqauPMq9sw6L6lZfZWQfPzLsNZHMAs9P1ohYCffI%2BSxxD5iGwZtbwJKQ%3D%3D';
     const { naver } = window;
+    const { addFeature, removeFeature } = stateFeatures();
 
     useEffect(() => {
         if (!mapRef.current || !naver) return;
@@ -14,27 +19,63 @@ function Map() {
             zoom: 15
         });
 
-        const selectSite = (lat, lng, center = null, zoom = null) => {
-            fetchJsonp(`https://api.vworld.kr/req/data?request=GetFeature&key=A8901E28-B93C-3A14-B1C1-2FBC40EB22CA&data=LP_PA_CBND_BUBUN&crs=EPSG:4326&geomFilter=POINT(${lng} ${lat})`)
+        const cadastralLayer = new naver.maps.CadastralLayer();
+        console.log(naver.maps);
+        console.log(naver.maps.UTMK);
+
+        const selectSite = (e) => {
+            console.log(e);
+            fetchJsonp(`https://api.vworld.kr/req/data?request=GetFeature&key=${keyVworld}&data=LP_PA_CBND_BUBUN&crs=EPSG:4326&geomFilter=POINT(${e.coord._lng} ${e.coord._lat})`)
                 .then(response => response.json())
                 .then(data => {
-                    map.data.addGeoJson(data.response.result.featureCollection);
-                    naver.maps.Event.addListener(map.data.getAllFeature().at(-1), 'click', (e) => map.data.removeFeature(e.feature));
-                    if (center) map.setCenter(center);
-                    if (zoom) map.setZoom(zoom);
+                    if (!data.response.result) return;
+                    const featureCollection = data.response.result.featureCollection;
+                    featureCollection.bbox = null;
+                    map.data.addGeoJson(featureCollection);
+
+                    const feature = map.data.getAllFeature().at(-1);
+                    const pnu = feature.property_pnu;
+
+                    fetchJsonp(`https://api.vworld.kr/ned/data/ladfrlList?key=${keyVworld}&pnu=${pnu}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.ladfrlVOList) return;
+                            const item = data.ladfrlVOList.ladfrlVOList[0];
+                            feature['property_area'] = Number(item.lndpclAr);
+                            feature['property_jimok'] = item.lndcgrCodeNm;
+                        })
+                        .catch(error => console.error('Error:', error));
+
+                    fetchJsonp(`https://api.vworld.kr/ned/data/getPossessionAttr?key=${keyVworld}&pnu=${pnu}&numOfRows=1`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.possessions) return;
+                            const item = data.possessions.field[0];
+                            feature['property_owner'] = item.posesnSeCodeNm;
+                            feature['property_ownerCount'] = Number(item.cnrsPsnCo);
+                        })
+                        .catch(error => console.error('Error:', error));
+
+                    setTimeout(() => addFeature(feature), 100);
+                    naver.maps.Event.addListener(feature, 'click', (e) => {
+                        map.data.removeFeature(e.feature);
+                        removeFeature(e.feature);
+                    });
                 })
                 .catch(error => console.error('Error:', error));
         };
 
-        naver.maps.Event.addListener(map, 'click', (e) => {
-            selectSite(e.coord._lat, e.coord._lng, map.getCenter(), map.getZoom());
-        });
-    }, [naver]);
+        toolRef.current.children[2].addEventListener('click', () => map.setMapTypeId(naver.maps.MapTypeId.NORMAL));
+        toolRef.current.children[3].addEventListener('click', () => map.setMapTypeId(naver.maps.MapTypeId.HYBRID));
+        toolRef.current.children[4].addEventListener('click', () => cadastralLayer.getMap() ? cadastralLayer.setMap(null) : cadastralLayer.setMap(map));
+
+        map.addListener('click', selectSite);
+    }, [naver, addFeature, removeFeature]);
 
     return (
         <section ref={mapRef} id='Map'>
             <div className='noise' />
-            <div className='tool'>
+            <div ref={toolRef} className='tool'>
                 <label className='item'>
                     <input type='text' id='search' placeholder='SEARCH' />
                     <i className='fa-solid fa-search' />

@@ -1,0 +1,25 @@
+#Site {
+    padding: 2rem;
+}
+
+#Site>h2 {
+    padding: 1rem 0;
+}
+
+#Site .info {
+    text-align: left;
+}
+
+#Site table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#Site table td {
+    padding: 0 3px;
+    border: 2px solid var(--color-black);
+}
+
+#Site thead td {
+    font-weight: 600;
+}

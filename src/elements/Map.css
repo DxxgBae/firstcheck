@@ -12,7 +12,7 @@
     border-radius: .5rem;
     display: flex;
     flex-direction: row;
-    background-color: whitesmoke;
+    background-color: white;
     filter: drop-shadow(0 0 .5rem rgba(0, 0, 0, .1));
 }
 
@@ -21,7 +21,7 @@
     margin: .5rem;
     width: 2rem;
     height: 2rem;
-    border-radius: .5rem;
+    border-radius: .25rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -29,7 +29,15 @@
 }
 
 #Map .tool .item:hover {
-    background-color: white;
+    background-color: whitesmoke;
+}
+
+#Map .tool .item>i {
+    transition: var(--ms);
+}
+
+#Map .tool .item:hover>i {
+    transform: scale(1.2);
 }
 
 #Map #search {
