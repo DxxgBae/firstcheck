@@ -4,7 +4,7 @@ function Building() {
     return (
         <section id='Building'>
             <div className='noise' />
-            Building
+            <h2>BUILDING</h2>
         </section>
     );
 }

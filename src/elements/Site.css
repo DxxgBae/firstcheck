@@ -10,6 +10,13 @@
     text-align: left;
 }
 
+#Site .info span {
+    line-height: 150%;
+    font-size: 2rem;
+    font-weight: 900;
+    text-decoration: underline;
+}
+
 #Site table {
     width: 100%;
     border-collapse: collapse;
@@ -20,6 +27,26 @@
     border: 2px solid var(--color-black);
 }
 
-#Site thead td {
-    font-weight: 600;
+#Site .tfoot {
+    display: flex;
+}
+
+#Site .tfoot .item {
+    cursor: pointer;
+    padding: 0 .5rem;
+    width: fit-content;
+    height: 2rem;
+    border-radius: .25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--ms);
+}
+
+#Site .tfoot .item:hover {
+    background-color: white;
+}
+
+#Site .tfoot .item>*:not(:first-child) {
+    margin-left: .5rem;
 }

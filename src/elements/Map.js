@@ -20,11 +20,8 @@ function Map() {
         });
 
         const cadastralLayer = new naver.maps.CadastralLayer();
-        console.log(naver.maps);
-        console.log(naver.maps.UTMK);
 
         const selectSite = (e) => {
-            console.log(e);
             fetchJsonp(`https://api.vworld.kr/req/data?request=GetFeature&key=${keyVworld}&data=LP_PA_CBND_BUBUN&crs=EPSG:4326&geomFilter=POINT(${e.coord._lng} ${e.coord._lat})`)
                 .then(response => response.json())
                 .then(data => {
@@ -35,6 +32,7 @@ function Map() {
 
                     const feature = map.data.getAllFeature().at(-1);
                     const pnu = feature.property_pnu;
+                    console.log(feature);
 
                     fetchJsonp(`https://api.vworld.kr/ned/data/ladfrlList?key=${keyVworld}&pnu=${pnu}`)
                         .then(response => response.json())
@@ -52,7 +50,7 @@ function Map() {
                             if (!data.possessions) return;
                             const item = data.possessions.field[0];
                             feature['property_owner'] = item.posesnSeCodeNm;
-                            feature['property_ownerCount'] = Number(item.cnrsPsnCo);
+                            feature['property_ownerCount'] = Number(item.cnrsPsnCo) + 1;
                         })
                         .catch(error => console.error('Error:', error));
 
@@ -65,12 +63,21 @@ function Map() {
                 .catch(error => console.error('Error:', error));
         };
 
-        toolRef.current.children[2].addEventListener('click', () => map.setMapTypeId(naver.maps.MapTypeId.NORMAL));
-        toolRef.current.children[3].addEventListener('click', () => map.setMapTypeId(naver.maps.MapTypeId.HYBRID));
-        toolRef.current.children[4].addEventListener('click', () => cadastralLayer.getMap() ? cadastralLayer.setMap(null) : cadastralLayer.setMap(map));
+        toolRef.current.children[2].addEventListener('change', () => {
+            map.setMapTypeId(naver.maps.MapTypeId.NORMAL);
+            cadastralLayer.setMap(null);
+        });
+        toolRef.current.children[3].addEventListener('change', () => {
+            map.setMapTypeId(naver.maps.MapTypeId.HYBRID);
+            cadastralLayer.setMap(null);
+        });
+        toolRef.current.children[4].addEventListener('change', () => {
+            map.setMapTypeId(naver.maps.MapTypeId.NORMAL);
+            cadastralLayer.setMap(map);
+        });
 
         map.addListener('click', selectSite);
-    }, [naver, addFeature, removeFeature]);
+    }, [naver]);
 
     return (
         <section ref={mapRef} id='Map'>
@@ -83,15 +90,18 @@ function Map() {
                 <div className='item'>
                     <i className='fa-solid fa-ruler' />
                 </div>
-                <div className='item'>
+                <label className='item'>
                     <i className='fa-solid fa-globe' />
-                </div>
-                <div className='item'>
+                    <input type='radio' name='tool' defaultChecked={true} />
+                </label>
+                <label className='item'>
                     <i className='fa-solid fa-earth-asia' />
-                </div>
-                <div className='item'>
+                    <input type='radio' name='tool' />
+                </label>
+                <label className='item'>
                     <i className='fa-solid fa-table-cells' />
-                </div>
+                    <input type='radio' name='tool' />
+                </label>
             </div>
         </section>
     );

@@ -4,7 +4,7 @@ function Chart() {
     return (
         <section id='Chart'>
             <div className='noise' />
-            Chart
+            <h2>CHART</h2>
         </section>
     );
 }

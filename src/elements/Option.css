@@ -1,3 +1,8 @@
 #Option {
+    padding: 2rem;
     height: 100%;
+}
+
+#Option>h2 {
+    padding: 1rem 0;
 }

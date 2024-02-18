@@ -28,8 +28,13 @@
     transition: var(--ms);
 }
 
-#Map .tool .item:hover {
+#Map .tool .item:hover,
+#Map .tool .item:has(input:checked) {
     background-color: whitesmoke;
+}
+
+#Map .tool .item input[type='radio'] {
+    display: none;
 }
 
 #Map .tool .item>i {
@@ -46,9 +51,10 @@
     padding: .5rem;
     width: 11.5rem;
     height: 2rem;
-    border-radius: .5rem;
+    border-radius: .25rem;
     outline: none;
     border: none;
+    background-color: whitesmoke;
     transition: var(--ms);
 }
 

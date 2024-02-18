@@ -4,7 +4,7 @@ function Option() {
     return (
         <section id='Option'>
             <div className='noise' />
-            Option
+            <h2>OPTION</h2>
         </section>
     );
 }
