@@ -20,18 +20,32 @@
 #Site table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
+
 
 #Site table td {
     padding: 0 3px;
     border: 2px solid var(--color-black);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-#Site .tfoot {
+#Site tbody tr {
+    cursor: pointer;
+    transition: var(--ms);
+}
+
+#Site tbody tr:hover {
+    background-color: gainsboro;
+}
+
+#Site .tool {
     display: flex;
 }
 
-#Site .tfoot .item {
+#Site .tool .item {
     cursor: pointer;
     padding: 0 .5rem;
     width: fit-content;
@@ -43,10 +57,10 @@
     transition: var(--ms);
 }
 
-#Site .tfoot .item:hover {
+#Site .tool .item:hover {
     background-color: white;
 }
 
-#Site .tfoot .item>*:not(:first-child) {
+#Site .tool .item>*:not(:first-child) {
     margin-left: .5rem;
 }

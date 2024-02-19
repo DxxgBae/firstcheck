@@ -54,7 +54,23 @@ function Map() {
                         })
                         .catch(error => console.error('Error:', error));
 
-                    setTimeout(() => addFeature(feature), 100);
+                    fetchJsonp(`https://api.vworld.kr/ned/data/getLandUseAttr?key=${keyVworld}&pnu=${pnu}&numOfRows=100`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.landUses) return;
+                            feature['property_landUse'] = data.landUses.field;
+                        })
+                        .catch(error => console.error('Error:', error));
+
+                    fetchJsonp(`https://api.vworld.kr/ned/data/getIndvdLandPriceAttr?key=${keyVworld}&pnu=${pnu}&numOfRows=100`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.indvdLandPrices) return;
+                            feature['property_price'] = data.indvdLandPrices.field.reverse();
+                        })
+                        .catch(error => console.error('Error:', error));
+
+                    setTimeout(() => addFeature(feature), 500);
                     naver.maps.Event.addListener(feature, 'click', (e) => {
                         map.data.removeFeature(e.feature);
                         removeFeature(e.feature);

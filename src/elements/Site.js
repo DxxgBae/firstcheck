@@ -7,15 +7,43 @@ function Site() {
     const [totalArea, setTotalArea] = useState(0);
     const [totalJiga, setTotalJiga] = useState(0);
     const [unit, setUnit] = useState(1);
+    const dataLandUse = [
+        { code: 'UQA111', name: '제1종전용주거지역' },
+        { code: 'UQA112', name: '제2종전용주거지역' },
+        { code: 'UQA121', name: '제1종일반주거지역' },
+        { code: 'UQA122', name: '제2종일반주거지역' },
+        { code: 'UQA123', name: '제3종일반주거지역' },
+        { code: 'UQA210', name: '중심상업지역' },
+        { code: 'UQA220', name: '일반상업지역' },
+        { code: 'UQA230', name: '근린상업지역' },
+        { code: 'UQA240', name: '유통상업지역' },
+        { code: 'UQA310', name: '전용공업지역' },
+        { code: 'UQA320', name: '일반공업지역' },
+        { code: 'UQA330', name: '준공업지역' },
+        { code: 'UQA410', name: '보전녹지지역' },
+        { code: 'UQA420', name: '생산녹지지역' },
+        { code: 'UQA430', name: '자연녹지지역' },
+    ]
+
+    const getLandUse = (feature) => {
+        const landUses = [];
+        for (var item of feature.property_landUse)
+            if (item.prposAreaDstrcCode.slice(0, 3) === 'UQA')
+                if (item.cnflcAt !== '3')
+                    for (var use of dataLandUse)
+                        if (use.code.toString() === item.prposAreaDstrcCode.toString())
+                            landUses.push(item.prposAreaDstrcCodeNm);
+        return landUses.join(', ');
+    };
 
     useEffect(() => {
         let area = 0;
         let jiga = 0;
 
-        features.forEach((e) => {
-            area += e.property_area;
-            jiga += e.property_area * e.property_jiga;
-        });
+        for (var item of features) {
+            area += item.property_area;
+            jiga += item.property_area * item.property_jiga;
+        }
 
         setTotalArea(area);
         setTotalJiga(jiga);
@@ -38,12 +66,12 @@ function Site() {
                 </p>
                 <p>
                     공시가격은
-                    {' '}<span>{`${totalJiga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}</span>{' '}
+                    {' '}<span>{`${totalJiga.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}</span>{' '}
                     <b>원</b> 입니다.
                 </p>
             </div>
             <h2>LIST</h2>
-            <div className='tfoot'>
+            <div className='tool'>
                 <div className='item' onClick={() => unit === 1 ? setUnit(.3025) : setUnit(1)}>
                     <small><b>{unit === 1 ? '제곱미터' : '평'}</b></small>
                     <i className='fa-solid fa-arrow-right-arrow-left' />
@@ -52,8 +80,8 @@ function Site() {
                 <div className='item'
                     onClick={() => {
                         if (features.length === 0) return;
-                        let csv = '번호,주소,지목,면적(m²),공시가격,공시일,소유자,소유자수\n';
-                        for (var i in features) csv += `${Number(i) + 1},${features[i].property_addr},${features[i].property_jimok},${features[i].property_area},${features[i].property_jiga},${features[i].property_gosi_year && `${features[i].property_gosi_year}-${features[i].property_gosi_month}`},${features[i].property_owner},${features[i].property_ownerCount}\n`;
+                        let csv = '번호,주소,지목,용도,면적(m²),공시가격,공시일,소유자,소유자수\n';
+                        for (var index in features) csv += `${Number(index) + 1},${features[index].property_addr},${features[index].property_jimok},${getLandUse(features[index])},${features[index].property_area},${features[index].property_jiga},${features[index].property_price.length > 0 && `${features[index].property_price[0].stdrYear}-${features[index].property_price[0].stdrMt}`},${features[index].property_owner},${features[index].property_ownerCount}\n`;
                         const csvFile = new Blob(['\ufeff' + csv], { type: 'text/csv' });
                         const link = document.createElement('a');
                         link.href = window.URL.createObjectURL(csvFile);
@@ -77,6 +105,9 @@ function Site() {
                         <td style={{ width: '6rem' }}>
                             <b>지목</b>
                         </td>
+                        <td style={{ width: '12rem' }}>
+                            <b>용도</b>
+                        </td>
                         <td style={{ width: '6rem' }}>
                             <b>면적<br /><small>({unit === 1 ? '제곱미터' : '평'})</small></b>
                         </td>
@@ -85,6 +116,12 @@ function Site() {
                         </td>
                         <td style={{ width: '6rem' }}>
                             <b>공시일<br /><small>(YYYY-MM)</small></b>
+                        </td>
+                        <td style={{ width: '6rem' }}>
+                            <b>소유자</b>
+                        </td>
+                        <td style={{ width: '6rem' }}>
+                            <b>소유자수</b>
                         </td>
                     </tr>
                 </thead>
@@ -100,20 +137,30 @@ function Site() {
                             <td>
                                 {item.property_jimok}
                             </td>
+                            <td>
+                                {getLandUse(item)}
+                            </td>
                             <td style={{ textAlign: 'right' }}>
                                 {(item.property_area * unit).toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                             </td>
                             <td style={{ textAlign: 'right' }}>
-                                {(item.property_jiga * unit).toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                {(item.property_price[0].pblntfPclnd * unit).toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                             </td>
                             <td>
-                                {item.property_gosi_year && `${item.property_gosi_year}-${item.property_gosi_month}`}
+                                {item.property_price.length > 0 && `${item.property_price[0].stdrYear}-${item.property_price[0].stdrMt}`}
+                            </td>
+                            <td>
+                                {item.property_owner}
+                            </td>
+                            <td>
+                                {item.property_ownerCount}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
         </section>
+
     );
 }
 
