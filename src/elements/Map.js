@@ -18,7 +18,6 @@ function Map() {
             center: new naver.maps.LatLng(37.51740, 127.02262),
             zoom: 15
         });
-
         const cadastralLayer = new naver.maps.CadastralLayer();
 
         const selectSite = (e) => {
@@ -30,8 +29,21 @@ function Map() {
                     featureCollection.bbox = null;
                     map.data.addGeoJson(featureCollection);
 
-                    const feature = map.data.getAllFeature().at(-1);
+                    const features = map.data.getAllFeature();
+                    const feature = features.at(-1);
                     const pnu = feature.property_pnu;
+                    feature.marker = new naver.maps.Marker({
+                        position: new naver.maps.LatLng(feature.getBounds().getCenter()),
+                        map: map,
+                        icon: {
+                            content: `<div class="marker">${features.length}</div>`,
+                            anchor: new naver.maps.Point(10, 10),
+                        }
+                    });
+                    feature.setStyle({
+                        strokeLineCap: 'round',
+                        strokeLineJoin: 'round',
+                    });
                     console.log(feature);
 
                     fetchJsonp(`https://api.vworld.kr/ned/data/ladfrlList?key=${keyVworld}&pnu=${pnu}`)
@@ -39,8 +51,8 @@ function Map() {
                         .then(data => {
                             if (!data.ladfrlVOList) return;
                             const item = data.ladfrlVOList.ladfrlVOList[0];
-                            feature['property_area'] = Number(item.lndpclAr);
-                            feature['property_jimok'] = item.lndcgrCodeNm;
+                            feature.property_area = Number(item.lndpclAr);
+                            feature.property_jimok = item.lndcgrCodeNm;
                         })
                         .catch(error => console.error('Error:', error));
 
@@ -49,8 +61,8 @@ function Map() {
                         .then(data => {
                             if (!data.possessions) return;
                             const item = data.possessions.field[0];
-                            feature['property_owner'] = item.posesnSeCodeNm;
-                            feature['property_ownerCount'] = Number(item.cnrsPsnCo) + 1;
+                            feature.property_owner = item.posesnSeCodeNm;
+                            feature.property_ownerCount = Number(item.cnrsPsnCo) + 1;
                         })
                         .catch(error => console.error('Error:', error));
 
@@ -58,7 +70,7 @@ function Map() {
                         .then(response => response.json())
                         .then(data => {
                             if (!data.landUses) return;
-                            feature['property_landUse'] = data.landUses.field;
+                            feature.property_landUse = data.landUses.field;
                         })
                         .catch(error => console.error('Error:', error));
 
@@ -66,12 +78,13 @@ function Map() {
                         .then(response => response.json())
                         .then(data => {
                             if (!data.indvdLandPrices) return;
-                            feature['property_price'] = data.indvdLandPrices.field.reverse();
+                            feature.property_price = data.indvdLandPrices.field.reverse();
                         })
                         .catch(error => console.error('Error:', error));
 
                     setTimeout(() => addFeature(feature), 500);
                     naver.maps.Event.addListener(feature, 'click', (e) => {
+                        e.feature.marker.setMap(null);
                         map.data.removeFeature(e.feature);
                         removeFeature(e.feature);
                     });

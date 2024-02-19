@@ -25,24 +25,25 @@ function Site() {
         { code: 'UQA430', name: '자연녹지지역' },
     ]
 
-    const getLandUse = (feature) => {
+    const getLandUse = (features) => {
         const landUses = [];
-        for (var item of feature.property_landUse)
-            if (item.prposAreaDstrcCode.slice(0, 3) === 'UQA')
-                if (item.cnflcAt !== '3')
-                    for (var use of dataLandUse)
-                        if (use.code.toString() === item.prposAreaDstrcCode.toString())
-                            landUses.push(item.prposAreaDstrcCodeNm);
-        return landUses.join(', ');
+        for (var feature of features)
+            for (var i of feature.property_landUse)
+                if (i.prposAreaDstrcCode.slice(0, 3) === 'UQA')
+                    if (i.cnflcAt !== '3')
+                        for (var use of dataLandUse)
+                            if (use.code.toString() === i.prposAreaDstrcCode.toString())
+                                if (landUses.indexOf(i.prposAreaDstrcCodeNm) < 0) landUses.push(i.prposAreaDstrcCodeNm);
+        return landUses.join(' ');
     };
 
     useEffect(() => {
         let area = 0;
         let jiga = 0;
 
-        for (var item of features) {
-            area += item.property_area;
-            jiga += item.property_area * item.property_jiga;
+        for (var i of features) {
+            area += i.property_area;
+            jiga += i.property_area * i.property_jiga;
         }
 
         setTotalArea(area);
@@ -81,7 +82,7 @@ function Site() {
                     onClick={() => {
                         if (features.length === 0) return;
                         let csv = '번호,주소,지목,용도,면적(m²),공시가격,공시일,소유자,소유자수\n';
-                        for (var index in features) csv += `${Number(index) + 1},${features[index].property_addr},${features[index].property_jimok},${getLandUse(features[index])},${features[index].property_area},${features[index].property_jiga},${features[index].property_price.length > 0 && `${features[index].property_price[0].stdrYear}-${features[index].property_price[0].stdrMt}`},${features[index].property_owner},${features[index].property_ownerCount}\n`;
+                        for (var i in features) csv += `${Number(i) + 1},${features[i].property_addr},${features[i].property_jimok},${getLandUse([features[i]])},${features[i].property_area},${features[i].property_jiga},${features[i].property_price && `${features[i].property_price[0].stdrYear}-${features[i].property_price[0].stdrMt}`},${features[i].property_owner},${features[i].property_ownerCount}\n`;
                         const csvFile = new Blob(['\ufeff' + csv], { type: 'text/csv' });
                         const link = document.createElement('a');
                         link.href = window.URL.createObjectURL(csvFile);
@@ -105,7 +106,7 @@ function Site() {
                         <td style={{ width: '6rem' }}>
                             <b>지목</b>
                         </td>
-                        <td style={{ width: '12rem' }}>
+                        <td style={{ width: '9rem' }}>
                             <b>용도</b>
                         </td>
                         <td style={{ width: '6rem' }}>
@@ -138,16 +139,16 @@ function Site() {
                                 {item.property_jimok}
                             </td>
                             <td>
-                                {getLandUse(item)}
+                                {getLandUse([item])}
                             </td>
                             <td style={{ textAlign: 'right' }}>
                                 {(item.property_area * unit).toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                             </td>
                             <td style={{ textAlign: 'right' }}>
-                                {(item.property_price[0].pblntfPclnd * unit).toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                {item.property_price && (item.property_price[0].pblntfPclnd * unit).toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                             </td>
                             <td>
-                                {item.property_price.length > 0 && `${item.property_price[0].stdrYear}-${item.property_price[0].stdrMt}`}
+                                {item.property_price && `${item.property_price[0].stdrYear}-${item.property_price[0].stdrMt}`}
                             </td>
                             <td>
                                 {item.property_owner}

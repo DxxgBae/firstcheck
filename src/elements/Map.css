@@ -62,3 +62,14 @@
     padding: 0;
     width: 0;
 }
+
+#Map .marker {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    border-radius: 10px;
+    background-color: var(--color-black);
+    color: white;
+    font-size: small;
+    font-weight: 600;
+}
