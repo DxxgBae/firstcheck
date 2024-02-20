@@ -27,13 +27,21 @@ function Site() {
 
     const getLandUse = (features) => {
         const landUses = [];
-        for (var feature of features)
+        for (var feature of features) {
             for (var i of feature.property_landUse)
                 if (i.prposAreaDstrcCode.slice(0, 3) === 'UQA')
-                    if (i.cnflcAt !== '3')
-                        for (var use of dataLandUse)
-                            if (use.code.toString() === i.prposAreaDstrcCode.toString())
+                    if (i.cnflcAt === '1')
+                        for (var j of dataLandUse)
+                            if (j.code.toString() === i.prposAreaDstrcCode.toString())
                                 if (landUses.indexOf(i.prposAreaDstrcCodeNm) < 0) landUses.push(i.prposAreaDstrcCodeNm);
+
+            for (var ii of feature.property_landUse)
+                if (ii.prposAreaDstrcCode.slice(0, 3) === 'UQA')
+                    if (ii.cnflcAt === '2')
+                        for (var jj of dataLandUse)
+                            if (jj.code.toString() === ii.prposAreaDstrcCode.toString())
+                                if (landUses.indexOf(ii.prposAreaDstrcCodeNm) < 0) landUses.push(ii.prposAreaDstrcCodeNm);
+        }
         return landUses.join(' ');
     };
 
@@ -128,7 +136,7 @@ function Site() {
                 </thead>
                 <tbody>
                     {features.map((item, index) => (
-                        <tr key={index}>
+                        <tr key={index} onClick={() => window.open(`https://www.eum.go.kr/web/ar/lu/luLandDet.jsp?isNoScr=script&mode=search&pnu=${item.property_pnu}`)}>
                             <td>
                                 {index + 1}
                             </td>

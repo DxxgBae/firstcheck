@@ -5,9 +5,9 @@
 #Map .tool {
     z-index: 1;
     position: absolute;
-    left: calc(50% - 7.5rem);
+    left: calc(50% - 9rem);
     bottom: 1rem;
-    width: 15rem;
+    width: 18rem;
     height: 3rem;
     border-radius: .5rem;
     display: flex;
@@ -49,7 +49,7 @@
     position: absolute;
     left: 3rem;
     padding: .5rem;
-    width: 11.5rem;
+    width: 14.5rem;
     height: 2rem;
     border-radius: .25rem;
     outline: none;
@@ -72,4 +72,8 @@
     color: white;
     font-size: small;
     font-weight: 600;
+}
+
+#Map *:has(>.marker) {
+    pointer-events: none;
 }

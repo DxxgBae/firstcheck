@@ -44,7 +44,13 @@ function Map() {
                         strokeLineCap: 'round',
                         strokeLineJoin: 'round',
                     });
+                    naver.maps.Event.addListener(feature, 'click', (e) => {
+                        e.feature.marker.setMap(null);
+                        map.data.removeFeature(e.feature);
+                        removeFeature(e.feature);
+                    });
                     console.log(feature);
+                    console.log(feature.marker);
 
                     fetchJsonp(`https://api.vworld.kr/ned/data/ladfrlList?key=${keyVworld}&pnu=${pnu}`)
                         .then(response => response.json())
@@ -83,24 +89,19 @@ function Map() {
                         .catch(error => console.error('Error:', error));
 
                     setTimeout(() => addFeature(feature), 500);
-                    naver.maps.Event.addListener(feature, 'click', (e) => {
-                        e.feature.marker.setMap(null);
-                        map.data.removeFeature(e.feature);
-                        removeFeature(e.feature);
-                    });
                 })
                 .catch(error => console.error('Error:', error));
         };
 
-        toolRef.current.children[2].addEventListener('change', () => {
+        toolRef.current.children[toolRef.current.children.length - 3].addEventListener('change', () => {
             map.setMapTypeId(naver.maps.MapTypeId.NORMAL);
             cadastralLayer.setMap(null);
         });
-        toolRef.current.children[3].addEventListener('change', () => {
+        toolRef.current.children[toolRef.current.children.length - 2].addEventListener('change', () => {
             map.setMapTypeId(naver.maps.MapTypeId.HYBRID);
             cadastralLayer.setMap(null);
         });
-        toolRef.current.children[4].addEventListener('change', () => {
+        toolRef.current.children[toolRef.current.children.length - 1].addEventListener('change', () => {
             map.setMapTypeId(naver.maps.MapTypeId.NORMAL);
             cadastralLayer.setMap(map);
         });
@@ -118,6 +119,10 @@ function Map() {
                 </label>
                 <div className='item'>
                     <i className='fa-solid fa-ruler' />
+                </div>
+                <div className='item' onClick={() => {
+                }}>
+                    <i className='fa-solid fa-camera' />
                 </div>
                 <label className='item'>
                     <i className='fa-solid fa-globe' />
