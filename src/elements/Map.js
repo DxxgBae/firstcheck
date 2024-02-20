@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react';
-import fetchJsonp from 'fetch-jsonp';
 import { stateFeatures } from './store';
+import fetchJsonp from 'fetch-jsonp';
 import './Map.css';
 
 function Map() {
     const mapRef = useRef();
-    const toolRef = useRef();
+    const mapNormalRef = useRef();
+    const mapHybridRef = useRef();
+    const mapCadastralRef = useRef();
     const { addFeature, removeFeature } = stateFeatures();
 
     useEffect(() => {
@@ -76,15 +78,15 @@ function Map() {
                 .catch(error => console.error(error));
         };
 
-        toolRef.current.children[toolRef.current.children.length - 3].addEventListener('change', () => {
+        mapNormalRef.current.addEventListener('change', () => {
             map.setMapTypeId(naver.maps.MapTypeId.NORMAL);
             cadastralLayer.setMap(null);
         });
-        toolRef.current.children[toolRef.current.children.length - 2].addEventListener('change', () => {
+        mapHybridRef.current.addEventListener('change', () => {
             map.setMapTypeId(naver.maps.MapTypeId.HYBRID);
             cadastralLayer.setMap(null);
         });
-        toolRef.current.children[toolRef.current.children.length - 1].addEventListener('change', () => {
+        mapCadastralRef.current.addEventListener('change', () => {
             map.setMapTypeId(naver.maps.MapTypeId.NORMAL);
             cadastralLayer.setMap(map);
         });
@@ -95,7 +97,7 @@ function Map() {
     return (
         <section ref={mapRef} id='Map'>
             <div className='noise' />
-            <div ref={toolRef} className='tool'>
+            <div className='tool'>
                 <label className='item'>
                     <input type='text' id='search' placeholder='SEARCH' />
                     <i className='fa-solid fa-search' />
@@ -103,19 +105,15 @@ function Map() {
                 <div className='item'>
                     <i className='fa-solid fa-ruler' />
                 </div>
-                <div className='item' onClick={() => {
-                }}>
-                    <i className='fa-solid fa-camera' />
-                </div>
-                <label className='item'>
+                <label className='item' ref={mapNormalRef}>
                     <i className='fa-solid fa-globe' />
                     <input type='radio' name='tool' defaultChecked={true} />
                 </label>
-                <label className='item'>
+                <label className='item' ref={mapHybridRef}>
                     <i className='fa-solid fa-earth-asia' />
                     <input type='radio' name='tool' />
                 </label>
-                <label className='item'>
+                <label className='item' ref={mapCadastralRef}>
                     <i className='fa-solid fa-table-cells' />
                     <input type='radio' name='tool' />
                 </label>
