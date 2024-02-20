@@ -17,6 +17,18 @@
     text-decoration: underline;
 }
 
+#Site .info input[type='number'] {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    width: 3.5rem;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: medium;
+    font-weight: 900;
+}
+
 #Site table {
     width: 100%;
     border-collapse: collapse;
