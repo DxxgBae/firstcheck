@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { stateFeatures } from './store';
+import html2canvas from 'html2canvas';
 import fetchJsonp from 'fetch-jsonp';
 import './Map.css';
 
 function Map() {
     const mapRef = useRef();
+    const mapScreenShotRef = useRef();
     const mapNormalRef = useRef();
     const mapHybridRef = useRef();
     const mapCadastralRef = useRef();
@@ -40,7 +42,7 @@ function Map() {
                 position: new naver.maps.LatLng(feature.getBounds().getCenter()),
                 map: map,
                 icon: {
-                    content: `<div class="marker">${features.length}</div>`,
+                    content: '<div class="marker"></div>',
                     anchor: new naver.maps.Point(10, 10),
                 }
             });
@@ -78,6 +80,18 @@ function Map() {
                 .catch(error => console.error(error));
         };
 
+        mapScreenShotRef.current.addEventListener('click', (e) => {
+            e.target.parentElement.style.opacity = 0;
+            html2canvas(mapRef.current, { useCORS: true })
+                .then((canvas) => {
+                    const link = document.createElement('a');
+                    const date = new Date();
+                    link.href = canvas.toDataURL('image/jpg');
+                    link.download = `FirstCheck ScreenShot ${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}${date.getSeconds().toString().padStart(2, '0')}.jpg`;
+                    link.click();
+                });
+            e.target.parentElement.style.opacity = 1;
+        });
         mapNormalRef.current.addEventListener('change', () => {
             map.setMapTypeId(naver.maps.MapTypeId.NORMAL);
             cadastralLayer.setMap(null);
@@ -105,15 +119,18 @@ function Map() {
                 <div className='item'>
                     <i className='fa-solid fa-ruler' />
                 </div>
-                <label className='item' ref={mapNormalRef}>
+                <div ref={mapScreenShotRef} className='item'>
+                    <i className='fa-solid fa-camera' />
+                </div>
+                <label ref={mapNormalRef} className='item'>
                     <i className='fa-solid fa-globe' />
                     <input type='radio' name='tool' defaultChecked={true} />
                 </label>
-                <label className='item' ref={mapHybridRef}>
+                <label ref={mapHybridRef} className='item'>
                     <i className='fa-solid fa-earth-asia' />
                     <input type='radio' name='tool' />
                 </label>
-                <label className='item' ref={mapCadastralRef}>
+                <label ref={mapCadastralRef} className='item'>
                     <i className='fa-solid fa-table-cells' />
                     <input type='radio' name='tool' />
                 </label>

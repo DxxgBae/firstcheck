@@ -114,7 +114,7 @@ function Site() {
                         const link = document.createElement('a');
                         link.href = window.URL.createObjectURL(csvFile);
                         const date = new Date();
-                        link.download = `Download ${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}${date.getSeconds().toString().padStart(2, '0')}.csv`;
+                        link.download = `FirstCheck SiteList ${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}${date.getSeconds().toString().padStart(2, '0')}.csv`;
                         link.click();
                     }}>
                     <i className='fa-solid fa-download' />

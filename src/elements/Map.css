@@ -5,9 +5,9 @@
 #Map .tool {
     z-index: 1;
     position: absolute;
-    left: calc(50% - 7.5rem);
+    left: calc(50% - 9rem);
     bottom: 1rem;
-    width: 15rem;
+    width: 18rem;
     height: 3rem;
     border-radius: .5rem;
     display: flex;
@@ -38,6 +38,7 @@
 }
 
 #Map .tool .item>i {
+    pointer-events: none;
     transition: var(--ms);
 }
 
@@ -49,7 +50,7 @@
     position: absolute;
     left: 3rem;
     padding: .5rem;
-    width: 11.5rem;
+    width: 14.5rem;
     height: 2rem;
     border-radius: .25rem;
     border: none;
@@ -66,7 +67,6 @@
 #Map .marker {
     width: 20px;
     height: 20px;
-    line-height: 20px;
     border-radius: 10px;
     background-color: var(--color-black);
     color: white;
