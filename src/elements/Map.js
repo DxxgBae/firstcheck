@@ -30,7 +30,7 @@ function Map() {
                 .then(data => { })
                 .catch(error => { });
 
-        window.parseResponse = function (featureCollection) {
+        window.parseResponse = (featureCollection) => {
             const features = map.data.getAllFeature();
             const pnu = featureCollection.features[0].properties.pnu;
             for (var i of features) if (pnu === i.property_pnu) return;
@@ -69,11 +69,15 @@ function Map() {
                 .then(responses => {
                     const [possessionAttr, landUseAttr, indvdLandPriceAttr] = responses;
 
-                    if (possessionAttr.possessions.field[0]) feature.property_owner_count = Number(possessionAttr.possessions.field[0].cnrsPsnCo) + 1;
+                    if (possessionAttr.possessions.field.length > 0) {
+                        const item = possessionAttr.possessions.field[0];
+                        feature.property_addr = [feature.property_sido_nm, feature.property_sgg_nm, feature.property_emd_nm, feature.property_ri_nm, item.mnnmSlno].join(' ').replace('  ', ' ');
+                        feature.property_owner_nm = item.posesnSeCodeNm.replace(' ', '·').replace('기관', '');
+                        feature.property_owner_count = Number(item.cnrsPsnCo) + 1;
+                    }
                     if (landUseAttr.landUses.field.length > 0) feature.property_landUse = landUseAttr.landUses.field;
                     if (indvdLandPriceAttr.indvdLandPrices.field.length > 0) feature.property_jiga = indvdLandPriceAttr.indvdLandPrices.field.reverse();
 
-                    feature.property_addr = [feature.property_sido_nm, feature.property_sgg_nm, feature.property_emd_nm, feature.property_ri_nm, feature.property_jibun].join(' ');
                     console.log(feature);
                     addFeature(feature);
                 })
@@ -106,7 +110,7 @@ function Map() {
         });
 
         map.addListener('click', selectSite);
-    }, []);
+    }, [addFeature, removeFeature]);
 
     return (
         <section ref={mapRef} id='Map'>

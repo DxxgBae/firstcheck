@@ -3,64 +3,11 @@ import { stateFeatures } from './store';
 import './Site.css';
 
 function Site() {
-    const { features } = stateFeatures();
+    const { features, getJiga, getLandUse } = stateFeatures();
     const [totalArea, setTotalArea] = useState(0);
     const [totalJiga, setTotalJiga] = useState(0);
     const [yearJiga, setYearJiga] = useState(new Date().getFullYear());
     const [unit, setUnit] = useState(1);
-    const dataLandUse = [
-        { code: 'UQA111', name: '제1종전용주거지역' },
-        { code: 'UQA112', name: '제2종전용주거지역' },
-        { code: 'UQA121', name: '제1종일반주거지역' },
-        { code: 'UQA122', name: '제2종일반주거지역' },
-        { code: 'UQA123', name: '제3종일반주거지역' },
-        { code: 'UQA130', name: '준주거지역' },
-        { code: 'UQA210', name: '중심상업지역' },
-        { code: 'UQA220', name: '일반상업지역' },
-        { code: 'UQA230', name: '근린상업지역' },
-        { code: 'UQA240', name: '유통상업지역' },
-        { code: 'UQA310', name: '전용공업지역' },
-        { code: 'UQA320', name: '일반공업지역' },
-        { code: 'UQA330', name: '준공업지역' },
-        { code: 'UQA410', name: '보전녹지지역' },
-        { code: 'UQA420', name: '생산녹지지역' },
-        { code: 'UQA430', name: '자연녹지지역' },
-        { code: 'UQB100', name: '계획관리지역' },
-        { code: 'UQB200', name: '생산관리지역' },
-        { code: 'UQB300', name: '보전관리지역' },
-        { code: 'UQC001', name: '농림지역' },
-        { code: 'UQD001', name: '자연환경보전지역' },
-    ]
-
-    const getJiga = (feature, year) => {
-        if (!feature.property_jiga) return;
-
-        for (var i of feature.property_jiga)
-            if (i.stdrYear === year)
-                return [Number(i.pblntfPclnd), `${i.stdrYear}-${i.stdrMt}`];
-
-        return [0,];
-    };
-
-    const getLandUse = (feature) => {
-        if (!feature.property_landUse) return;
-
-        const landUses = [];
-
-        for (var i of feature.property_landUse)
-            if (i.cnflcAt === '1')
-                for (var j of dataLandUse)
-                    if (j.code.toString() === i.prposAreaDstrcCode.toString())
-                        if (landUses.indexOf(i.prposAreaDstrcCodeNm) < 0) landUses.push(i.prposAreaDstrcCodeNm);
-
-        for (var ii of feature.property_landUse)
-            if (ii.cnflcAt === '2')
-                for (var jj of dataLandUse)
-                    if (jj.code.toString() === ii.prposAreaDstrcCode.toString())
-                        if (landUses.indexOf(ii.prposAreaDstrcCodeNm) < 0) landUses.push(ii.prposAreaDstrcCodeNm);
-
-        return landUses.join(' ');
-    };
 
     useEffect(() => {
         let area = 0;
@@ -73,7 +20,7 @@ function Site() {
 
         setTotalArea(area);
         setTotalJiga(jiga);
-    }, [features, yearJiga]);
+    }, [features, getJiga, yearJiga]);
 
     return (
         <section id='Site'>
@@ -108,8 +55,8 @@ function Site() {
                 <div className='item'
                     onClick={() => {
                         if (features.length === 0) return;
-                        let csv = '번호,주소,지목,용도,면적(m²),공시가격,공시일,소유자,소유자수\n';
-                        for (var i in features) csv += `${Number(i) + 1},${features[i].property_addr},${features[i].property_jimok},${getLandUse(features[i])},${features[i].property_parea},${getJiga(features[i], yearJiga)[0]},${getJiga(features[i], yearJiga)[1]},${features[i].property_owner_nm},${features[i].property_owner_count}\n`;
+                        let csv = '번호,주소,지목,용도,면적(m²),공시가격,공시일,소유자\n';
+                        for (var i in features) csv += `${Number(i) + 1},${features[i].property_addr},${features[i].property_jimok},${getLandUse(features[i])},${features[i].property_parea},${getJiga(features[i], yearJiga)[0]},${getJiga(features[i], yearJiga)[1]},${features[i].property_owner_nm}${features[i].property_owner_count > 1 ? features[i].property_owner_count : ''}\n`;
                         const csvFile = new Blob(['\ufeff' + csv], { type: 'text/csv' });
                         const link = document.createElement('a');
                         link.href = window.URL.createObjectURL(csvFile);
@@ -148,9 +95,6 @@ function Site() {
                         <td style={{ width: '6rem' }}>
                             <b>소유자</b>
                         </td>
-                        <td style={{ width: '6rem' }}>
-                            <b>소유자수</b>
-                        </td>
                     </tr>
                 </thead>
                 <tbody>
@@ -178,10 +122,7 @@ function Site() {
                                 {getJiga(item, yearJiga)[1]}
                             </td>
                             <td>
-                                {item.property_owner_nm}
-                            </td>
-                            <td>
-                                {item.property_owner_count}
+                                {item.property_owner_nm}{item.property_owner_count > 1 ? item.property_owner_count : undefined}
                             </td>
                         </tr>
                     ))}
