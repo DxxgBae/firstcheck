@@ -1,6 +1,15 @@
 import { create } from 'zustand';
 
 export const stateFeatures = create((set) => ({
+    map: null,
+    cadastralLayer: null,
+    setMap: (mapElement, cadastralLayerElement) => set((state) => {
+        if (!state.map)
+            return {
+                map: mapElement,
+                cadastralLayer: cadastralLayerElement
+            };
+    }),
     features: [],
     addFeature: (newFeature) =>
         set((state) => {
@@ -15,10 +24,8 @@ export const stateFeatures = create((set) => ({
             for (var i in updatedFeatures) updatedFeatures[i].marker.getElement().firstChild.textContent = Number(i) + 1;
             return { features: updatedFeatures }
         }),
-    getTotalArea: () =>
-        set((state) => {
-
-        }),
+    clearFeatures: () =>
+        set(() => ({ features: [] })),
     getJiga: (feature, year) => {
         if (!feature.property_jiga) return;
 

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { stateFeatures } from './store';
+import { stateFeatures } from './storeMap';
 import './Site.css';
 
 function Site() {
-    const { features, getJiga, getLandUse } = stateFeatures();
+    const { features, clearFeatures, getJiga, getLandUse } = stateFeatures();
     const [totalArea, setTotalArea] = useState(0);
     const [totalJiga, setTotalJiga] = useState(0);
     const [yearJiga, setYearJiga] = useState(new Date().getFullYear());
@@ -47,10 +47,9 @@ function Site() {
             </div>
             <h2>LIST</h2>
             <div className='tool'>
-                <div className='item' onClick={() => unit === 1 ? setUnit(.3025) : setUnit(1)}>
-                    <small><b>{unit === 1 ? '제곱미터' : '평'}</b></small>
-                    <i className='fa-solid fa-arrow-right-arrow-left' />
-                    <small><b>{unit !== 1 ? '제곱미터' : '평'}</b></small>
+                <div className='item' onClick={() => clearFeatures()}>
+                    <i className='fa-solid fa-trash-can' />
+                    <small><b>DELETE ALL</b></small>
                 </div>
                 <div className='item'
                     onClick={() => {
@@ -66,6 +65,11 @@ function Site() {
                     }}>
                     <i className='fa-solid fa-download' />
                     <small><b>DOWNLOAD</b></small>
+                </div>
+                <div className='item' onClick={() => unit === 1 ? setUnit(.3025) : setUnit(1)}>
+                    <small><b>{unit === 1 ? '제곱미터' : '평'}</b></small>
+                    <i className='fa-solid fa-arrow-right-arrow-left' />
+                    <small><b>{unit !== 1 ? '제곱미터' : '평'}</b></small>
                 </div>
             </div>
             <table>
@@ -129,7 +133,6 @@ function Site() {
                 </tbody>
             </table>
         </section>
-
     );
 }
 

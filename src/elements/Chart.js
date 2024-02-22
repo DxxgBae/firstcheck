@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { stateFeatures } from './store';
+import { stateFeatures } from './storeMap';
 //import fetchJsonp from 'fetch-jsonp';
 import './Chart.css';
 
