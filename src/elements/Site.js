@@ -3,7 +3,7 @@ import { useStore } from './Store';
 import './Site.css';
 
 function Site() {
-    const { features } = useStore();
+    const { features, clearFeatures } = useStore();
     const [yearJiga, setYearJiga] = useState(new Date().getFullYear());
     const [unit, setUnit] = useState(1);
 
@@ -102,7 +102,7 @@ function Site() {
             </div>
             <h2>LIST</h2>
             <div className='tool'>
-                <div className='item' onClick={() => { }}>
+                <div className='item' onClick={() => clearFeatures()}>
                     <i className='fa-solid fa-trash-can' />
                     <small><b>DELETE ALL</b></small>
                 </div>

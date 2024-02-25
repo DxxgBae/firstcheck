@@ -28,21 +28,6 @@ function Header() {
                             CHART
                         </h6>
                     </li>
-                    <div className='hline' />
-                    <li className='item' onClick={() => document.getElementById('Building').scrollIntoView()}>
-                        <i className='fa-solid fa-building fa-xl' />
-                        <h6 className='title'>
-                            <i className='fa-solid fa-play' />
-                            BUILDING
-                        </h6>
-                    </li>
-                    <li className='item' onClick={() => document.getElementById('Option').scrollIntoView()}>
-                        <i className='fa-solid fa-sliders fa-xl' />
-                        <h6 className='title'>
-                            <i className='fa-solid fa-play' />
-                            OPTION
-                        </h6>
-                    </li>
                 </ul>
                 <ul>
                     <li className='item'>

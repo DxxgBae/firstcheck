@@ -57,17 +57,14 @@ export const useStore = create((set) => ({
                         if (indvdLandPriceAttr.indvdLandPrices.field.length > 0) properties.jiga = indvdLandPriceAttr.indvdLandPrices.field.reverse();
 
                         map.data.addGeoJson(featureCollection);
+                        console.log(featureCollection);
                         state.setFeatures(map.data.getAllFeature().sort((a, b) => (a.property_pnu > b.property_pnu) ? 1 : -1));
                     })
                     .catch(error => console.error(error));
             };
         });
 
-        map.data.addListener('click', (e) => {
-            e.feature.marker.setMap(null);
-            map.data.removeFeature(e.feature);
-            state.setFeatures(map.data.getAllFeature());
-        });
+        map.data.addListener('click', (e) => state.removeFeature(e.feature));
 
         return { map: map };
     }),
@@ -85,6 +82,17 @@ export const useStore = create((set) => ({
             });
         }
         return { features: features };
+    }),
+    removeFeature: (feature) => set((state) => {
+        feature.marker.setMap(null);
+        state.map.data.removeFeature(feature);
+        state.setFeatures(state.map.data.getAllFeature());
+        return state;
+    }),
+    clearFeatures: () => set((state) => {
+        if (!state.map) return state;
+        while (state.features.length > 0) state.removeFeature(state.features[0]);
+        return state;
     }),
     setMapType: (type) => set((state) => {
         if (!state.map) return state;
