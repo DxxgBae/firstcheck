@@ -9,7 +9,9 @@
 
 :root {
     --color-black: rgb(50, 50, 50);
-    --color-main: CornflowerBlue;
+    --color-red: IndianRed;
+    --color-green: DarkSeaGreen;
+    --color-blue: CornflowerBlue;
     --ms: 500ms;
 }
 
