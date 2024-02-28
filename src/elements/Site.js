@@ -16,11 +16,12 @@ function Site() {
     const getTotalJiga = (features) => {
         let price = 0;
         for (var i of features)
-            for (var j of i.property_jiga)
-                if (j.stdrYear === yearJiga) {
-                    price += i.property_parea * j.pblntfPclnd;
-                    continue;
-                }
+            if (i.property_jiga)
+                for (var j of i.property_jiga)
+                    if (j.stdrYear === yearJiga) {
+                        price += i.property_parea * j.pblntfPclnd;
+                        continue;
+                    }
         return price;
     };
 

@@ -47,18 +47,18 @@ export const useStore = create((set) => ({
                 Promise.all(promises)
                     .then(responses => {
                         const [possessionAttr, landCharacteristics, landUseAttr, indvdLandPriceAttr] = responses;
-                        if (possessionAttr.possessions.field.length > 0) {
+                        if (possessionAttr.possessions) {
                             const item = possessionAttr.possessions.field[0];
                             properties.addr = [properties.sido_nm, properties.sgg_nm, properties.emd_nm, properties.ri_nm, item.mnnmSlno].join(' ').replace('  ', ' ');
                             properties.owner_nm = item.posesnSeCodeNm.replace(' ', '·').replace('기관', '');
                             properties.owner_count = Number(item.cnrsPsnCo) + 1;
                         }
-                        if (landCharacteristics.landCharacteristicss.field.length > 0) {
-                            const item = landCharacteristics.landCharacteristicss.field[0];
-                            console.log(item);
+                        if (landCharacteristics.landCharacteristicss) {
+                            //const item = landCharacteristics.landCharacteristicss.field[0];
+                            //console.log(item);
                         }
-                        if (landUseAttr.landUses.field.length > 0) properties.landUse = landUseAttr.landUses.field;
-                        if (indvdLandPriceAttr.indvdLandPrices.field.length > 0) properties.jiga = indvdLandPriceAttr.indvdLandPrices.field.reverse();
+                        if (landUseAttr.landUses) properties.landUse = landUseAttr.landUses.field;
+                        if (indvdLandPriceAttr.indvdLandPrices) properties.jiga = indvdLandPriceAttr.indvdLandPrices.field.reverse();
 
                         map.data.addGeoJson(featureCollection);
                         state.setFeatures(map.data.getAllFeature().sort((a, b) => (a.property_pnu > b.property_pnu) ? 1 : -1));
