@@ -3,6 +3,24 @@ import html2canvas from 'html2canvas';
 import fetchJsonp from 'fetch-jsonp';
 const { naver } = window;
 const cadastralLayer = new naver.maps.CadastralLayer();
+const infoElement = document.createElement('div');
+infoElement.className = 'iw_inner';
+const infoList = ['주소', '지목', '용도', '면적', '소유자'];
+for (var i of infoList) {
+    const div = document.createElement('div');
+    div.className = 'text';
+    const small = document.createElement('small');
+    small.textContent = i;
+    div.append(small);
+    const h = document.createElement('h6');
+    div.append(h);
+    infoElement.append(div);
+}
+const indoArrow = document.createElement('i');
+indoArrow.className = 'fa-solid fa-play';
+infoElement.append(indoArrow);
+infoElement.append(indoArrow.cloneNode());
+const infoWindow = new naver.maps.InfoWindow({ content: infoElement });
 const keyVworld = 'A8901E28-B93C-3A14-B1C1-2FBC40EB22CA';
 //const keyData = 'GXGoD02oAtHgVlYoMYAk%2FF4R7Z68cpmqauPMq9sw6L6lZfZWQfPzLsNZHMAs9P1ohYCffI%2BSxxD5iGwZtbwJKQ%3D%3D';
 
@@ -25,7 +43,7 @@ export const useStore = create((set) => ({
         }));
 
         map.addListener('click', (e) => {
-            fetchJsonp(`https://api.vworld.kr/req/wfs?key=${keyVworld}&request=GetFeature&output=text/javascript&typename=lt_c_landinfobasemap&srsname=EPSG:4326&bbox=${e.coord._lng},${e.coord._lat},${e.coord._lng},${e.coord._lat}`)
+            fetchJsonp(`https://api.vworld.kr/req/wfs?key=${keyVworld}&request=GetFeature&output=text/javascript&typename=lp_pa_cbnd_bubun&srsname=EPSG:4326&bbox=${e.coord._lng},${e.coord._lat},${e.coord._lng},${e.coord._lat}`)
                 .then(response => response.json())
                 .then(data => { })
                 .catch(error => { });
@@ -40,24 +58,30 @@ export const useStore = create((set) => ({
                         .then(response => response.json())
                         .catch(error => console.error(error));
                 };
+                promises.push(fetchJsonpPromise(`https://api.vworld.kr/ned/data/ladfrlList?key=${keyVworld}&pnu=${properties.pnu}&numOfRows=1`));
                 promises.push(fetchJsonpPromise(`https://api.vworld.kr/ned/data/getPossessionAttr?key=${keyVworld}&pnu=${properties.pnu}&numOfRows=1`));
                 promises.push(fetchJsonpPromise(`https://api.vworld.kr/ned/data/getLandCharacteristics?key=${keyVworld}&pnu=${properties.pnu}&numOfRows=1`));
                 promises.push(fetchJsonpPromise(`https://api.vworld.kr/ned/data/getLandUseAttr?key=${keyVworld}&pnu=${properties.pnu}&numOfRows=100`));
                 promises.push(fetchJsonpPromise(`https://api.vworld.kr/ned/data/getIndvdLandPriceAttr?key=${keyVworld}&pnu=${properties.pnu}&numOfRows=100`));
                 Promise.all(promises)
                     .then(responses => {
-                        const [possessionAttr, landCharacteristics, landUseAttr, indvdLandPriceAttr] = responses;
+                        const [ladfrlList, possessionAttr, landCharacteristics, landUseAttr, indvdLandPriceAttr] = responses;
+                        if (ladfrlList.ladfrlVOList) {
+                            const item = ladfrlList.ladfrlVOList.ladfrlVOList[0];
+                            properties.area = Number(item.lndpclAr);
+                            properties.jimok = item.lndcgrCodeNm;
+                        }
                         if (possessionAttr.possessions) {
                             const item = possessionAttr.possessions.field[0];
-                            properties.addr = [properties.sido_nm, properties.sgg_nm, properties.emd_nm, properties.ri_nm, item.mnnmSlno].join(' ').replace('  ', ' ');
                             properties.owner_nm = item.posesnSeCodeNm.replace(' ', '·').replace('기관', '');
-                            properties.owner_count = Number(item.cnrsPsnCo) + 1;
+                            properties.owner_count = Number(possessionAttr.possessions.totalCount);
                         }
                         if (landCharacteristics.landCharacteristicss) {
-                            //const item = landCharacteristics.landCharacteristicss.field[0];
-                            //console.log(item);
+                            const item = landCharacteristics.landCharacteristicss.field[0];
+                            properties.landUse = item.prposArea1Nm;
+                            if (item.prposArea2 !== '00') properties.landUse += ' ' + item.prposArea2Nm;
                         }
-                        if (landUseAttr.landUses) properties.landUse = landUseAttr.landUses.field;
+                        if (landUseAttr.landUses); //console.log(landUseAttr);
                         if (indvdLandPriceAttr.indvdLandPrices) properties.jiga = indvdLandPriceAttr.indvdLandPrices.field.reverse();
 
                         map.data.addGeoJson(featureCollection);
@@ -67,7 +91,19 @@ export const useStore = create((set) => ({
             };
         });
 
-        map.data.addListener('click', (e) => state.removeFeature(e.feature));
+        map.data.addListener('click', (e) => {
+            state.removeFeature(e.feature);
+            infoWindow.close();
+        });
+        map.data.addListener('mouseover', (e) => {
+            infoElement.children[0].lastChild.textContent = e.feature.property_addr;
+            infoElement.children[1].lastChild.textContent = e.feature.property_jimok;
+            infoElement.children[2].lastChild.textContent = e.feature.property_landUse.replace(' ', ', ');
+            infoElement.children[3].lastChild.textContent = `${e.feature.property_area.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} m²`;
+            infoElement.children[4].lastChild.textContent = `${e.feature.property_owner_nm}${e.feature.property_owner_count > 1 ? `(${e.feature.property_owner_count})` : ''}`;
+            infoWindow.open(map, e.feature.marker);
+        });
+        map.data.addListener('mouseout', () => infoWindow.close());
 
         return { map: map };
     }),

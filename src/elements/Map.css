@@ -77,3 +77,49 @@
 #Map *:has(>.marker) {
     pointer-events: none;
 }
+
+#Map div:has(>div>.iw_inner) {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+#Map div:has(>.iw_inner)+div,
+#Map div:has(>.iw_inner)+div+div {
+    display: none;
+}
+
+#Map .iw_inner {
+    position: relative;
+    padding: 1rem;
+    border: 2px solid var(--color-black) !important;
+    border-radius: 3px;
+    background-color: white;
+}
+
+#Map .iw_inner .text {
+    display: flex;
+}
+
+#Map .iw_inner .text *:first-child {
+    width: 3rem;
+    text-align: left;
+}
+
+#Map .iw_inner i {
+    z-index: -1;
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    width: 0;
+    height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transform: rotate(90deg) scale(1.2);
+}
+
+#Map .iw_inner i+i {
+    z-index: 1;
+    color: white;
+    transform: rotate(90deg) scale(.9);
+}

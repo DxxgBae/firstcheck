@@ -9,7 +9,7 @@ function Site() {
 
     const getTotalArea = (features) => {
         let area = 0;
-        for (var i of features) area += i.property_parea;
+        for (var i of features) area += i.property_area;
         return area;
     };
 
@@ -19,7 +19,7 @@ function Site() {
             if (i.property_jiga)
                 for (var j of i.property_jiga)
                     if (j.stdrYear === yearJiga) {
-                        price += i.property_parea * j.pblntfPclnd;
+                        price += i.property_area * j.pblntfPclnd;
                         continue;
                     }
         return price;
@@ -42,40 +42,6 @@ function Site() {
             year: year,
             month: month,
         };
-    };
-
-    const getLandUse = (feature) => {
-        const dataLandUse = [
-            '제1종전용주거지역',
-            '제2종전용주거지역',
-            '제1종일반주거지역',
-            '제2종일반주거지역',
-            '제3종일반주거지역',
-            '준주거지역',
-            '중심상업지역',
-            '일반상업지역',
-            '근린상업지역',
-            '유통상업지역',
-            '전용공업지역',
-            '일반공업지역',
-            '준공업지역',
-            '보전녹지지역',
-            '생산녹지지역',
-            '자연녹지지역',
-            '계획관리지역',
-            '생산관리지역',
-            '보전관리지역',
-            '농림지역',
-            '자연환경보전지역',
-        ]
-        const use = [];
-        if (feature.property_landUse)
-            for (var i of feature.property_landUse)
-                if (i.cnflcAt !== '3')
-                    for (var j of dataLandUse)
-                        if (j === i.prposAreaDstrcCodeNm)
-                            use.push(j);
-        return use.join(' ');
     };
 
     return (
@@ -115,8 +81,8 @@ function Site() {
                             const num = Number(i) + 1;
                             const addr = features[i].property_addr;
                             const jimok = features[i].property_jimok;
-                            const use = getLandUse(i);
-                            const area = features[i].property_parea;
+                            const use = features[i].property_landUse;
+                            const area = features[i].property_area;
                             const jiga = getJiga(i);
                             const price = jiga.price;
                             const gosi = jiga.year + '-' + jiga.month;
@@ -182,13 +148,13 @@ function Site() {
                                 {item.property_jimok}
                             </td>
                             <td>
-                                {getLandUse(item)}
+                                {item.property_landUse}
                             </td>
                             <td style={{ textAlign: 'right' }}>
-                                {(item.property_parea * unit).toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                {(item.property_area * unit).toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                             </td>
                             <td style={{ textAlign: 'right' }}>
-                                {(getJiga(item).price * unit).toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                {(getJiga(item).price / unit).toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                             </td>
                             <td>
                                 {getJiga(item).year}-{getJiga(item).month}
