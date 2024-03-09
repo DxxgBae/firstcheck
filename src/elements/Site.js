@@ -83,7 +83,7 @@ function Site() {
                             const jimok = features[i].property_jimok;
                             const use = features[i].property_landUse;
                             const area = features[i].property_area;
-                            const jiga = getJiga(i);
+                            const jiga = getJiga(features[i]);
                             const price = jiga.price;
                             const gosi = jiga.year + '-' + jiga.month;
                             const owner = features[i].property_owner_nm;
