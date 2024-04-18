@@ -1,5 +1,5 @@
 #Map {
-    height: calc(100% * 2 / 3);
+    height: 100%;
 }
 
 #Map .tool {
@@ -90,7 +90,7 @@
 
 #Map .iw_inner {
     position: relative;
-    padding: 1rem;
+    padding: 1rem 1rem 0;
     border: 2px solid var(--color-black) !important;
     border-radius: 3px;
     background-color: white;
@@ -105,7 +105,31 @@
     text-align: left;
 }
 
-#Map .iw_inner i {
+#Map .iw_inner .close {
+    cursor: pointer;
+    margin: .5rem 0;
+    width: 100%;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .25rem;
+    transition: var(--ms);
+}
+
+#Map .iw_inner .close:hover {
+    background-color: whitesmoke;
+}
+
+#Map .iw_inner .close i {
+    transition: var(--ms);
+}
+
+#Map .iw_inner .close:hover i {
+    transform: scale(1.2);
+}
+
+#Map .iw_inner i.back {
     z-index: -1;
     position: absolute;
     left: 50%;
@@ -118,7 +142,7 @@
     transform: rotate(90deg) scale(1.2);
 }
 
-#Map .iw_inner i+i {
+#Map .iw_inner i.back+i.back {
     z-index: 1;
     color: white;
     transform: rotate(90deg) scale(.9);

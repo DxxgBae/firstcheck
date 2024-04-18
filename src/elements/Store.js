@@ -17,10 +17,16 @@ for (var i of infoList) {
     div.append(h);
     infoElement.append(div);
 }
-const indoArrow = document.createElement('i');
-indoArrow.className = 'fa-solid fa-play';
-infoElement.append(indoArrow);
-infoElement.append(indoArrow.cloneNode());
+const infoClose = document.createElement('div');
+infoClose.className = 'close';
+const infoXmark = document.createElement('i');
+infoXmark.className = 'fa-solid fa-xmark';
+infoClose.append(infoXmark);
+infoElement.append(infoClose);
+const infoArrow = document.createElement('i');
+infoArrow.className = 'fa-solid fa-play back';
+infoElement.append(infoArrow);
+infoElement.append(infoArrow.cloneNode());
 const infoWindow = new naver.maps.InfoWindow({ content: infoElement });
 const keyVworld = 'A8901E28-B93C-3A14-B1C1-2FBC40EB22CA';
 //const keyData = 'GXGoD02oAtHgVlYoMYAk%2FF4R7Z68cpmqauPMq9sw6L6lZfZWQfPzLsNZHMAs9P1ohYCffI%2BSxxD5iGwZtbwJKQ%3D%3D';
@@ -118,19 +124,19 @@ export const useStore = create((set) => ({
             };
         });
 
-        map.data.addListener('click', (e) => {
+        map.data.addListener('rightclick', (e) => {
             state.removeFeature(e.feature);
             infoWindow.close();
         });
-        map.data.addListener('mouseover', (e) => {
+        map.data.addListener('click', (e) => {
             infoElement.children[0].lastChild.textContent = e.feature.property_addr;
             infoElement.children[1].lastChild.textContent = e.feature.property_jimok;
             infoElement.children[2].lastChild.textContent = e.feature.property_landUse;
             infoElement.children[3].lastChild.textContent = `${e.feature.property_area.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} m²`;
             infoElement.children[4].lastChild.textContent = `${e.feature.property_owner_nm}${e.feature.property_owner_count > 1 ? `(${e.feature.property_owner_count})` : ''}`;
+            infoElement.children[5].addEventListener('click', () => infoWindow.close());
             infoWindow.open(map, e.feature.marker);
         });
-        map.data.addListener('mouseout', () => infoWindow.close());
 
         return { map: map };
     }),
